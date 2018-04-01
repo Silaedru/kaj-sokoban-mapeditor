@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sokoban mapeditor</title>
+
+        <link rel="stylesheet" href="css/style.css">
+
+        <script src="js/renderer.js"></script>
+        <script src="js/map.js"></script>
+        <script src="js/main.js"></script>
+
+        <script>
+            window.addEventListener("load", () => {
+                document.querySelector("#width").addEventListener("change", () => resizeMap());
+                document.querySelector("#height").addEventListener("change", () => resizeMap());
+                document.querySelector("canvas").addEventListener("click", e => handleClick(e.pageX - e.target.offsetLeft, e.pageY - e.target.offsetTop));
+                document.querySelector("#save").addEventListener("click", () => {
+                    if (map) {
+                        const mapJsonObject = map.asJson();
+                        let error = "";
+
+                        if (0 === mapJsonObject.targets.length)
+                            error += "No targets are present\n";
+
+                        if (mapJsonObject.crates.length !== mapJsonObject.targets.length)
+                            error += `Inconsistent number of crates and targets (crates: ${mapJsonObject.crates.length}, targets: ${mapJsonObject.targets.length})\n`;
+
+                        if (mapJsonObject.player === null)
+                            error += "Player starting position is not set";
+
+                        if (error !== "") {
+                            error = "Following errors occurred while exporting the map:\n" + error;
+                            alert(error);
+                            return;
+                        }
+
+                        document.querySelector("#export").style.display = "block";
+                        document.querySelector("#export textarea").value = JSON.stringify(mapJsonObject);
+                    }
+                });
+                document.querySelector("#hide").addEventListener("click", () => document.querySelector("#export").style.display = "none");
+                document.querySelector("#clear").addEventListener("click", () => {
+                    map = null;
+                    resizeMap();
+                });
+
+                document.querySelector("#clipboard").addEventListener("click", () => {
+                    const input = document.querySelector("#mapdata");
+                    input.select();
+                    document.execCommand("Copy");
+                    document.querySelector("#export small").style.display = "block";
+                    setTimeout(() => {
+                        document.querySelector("#export small").style.display = "none";
+                    }, 2500);
+                });
+
+                window.addEventListener("resize", () => {
+                    if (renderer && map)
+                        render(renderer, map);
+                });
+
+                resizeMap();
+            });
+        </script>
+    </head>
+
+    <body>
+        <header>
+            <h1>
+                Sokoban mapeditor
+            </h1>
+        </header>
+
+        <section>
+            <aside>
+                <label>Map width: <input type="number" min="1" max="50" value="8" id="width"></label>
+                <label>Map height: <input type="number" min="1" max="50" value="8" id="height"></label>
+                <button id="save">Export</button>
+                <button id="clear">Clear</button>
+            </aside>
+
+            <aside id="export">
+                <div>
+                    <label for="mapdata">Map data:</label>
+                    <textarea cols="40" rows="4" id="mapdata" readonly></textarea>
+
+                </div>
+
+                <div>
+                    <button id="clipboard">Copy to clipboard</button>
+                    <button id="hide">Hide</button>
+                </div>
+
+                <small>
+                    Copied
+                </small>
+            </aside>
+
+            <aside>
+                <label><input type="radio" name="tile" value="0">Remove object</label>
+                <label><input type="radio" name="tile" value="1" checked>Wall</label>
+                <label><input type="radio" name="tile" value="2">Crate</label>
+                <label><input type="radio" name="tile" value="3">Target</label>
+                <label><input type="radio" name="tile" value="4">Player</label>
+            </aside>
+
+            <div class="canvas-container">
+                <canvas></canvas>
+            </div>
+        </section>
+    </body>
+</html>

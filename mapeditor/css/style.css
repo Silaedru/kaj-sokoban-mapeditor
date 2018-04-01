@@ -1,0 +1,66 @@
+body {
+    max-width: 800px;
+    margin: auto;
+    font-family: helvetica, arial, sans-serif;
+    padding: 10px 20px;
+}
+
+header {
+    text-align: center;
+}
+
+header, section, footer {
+    margin: 10px 0;
+    border: 1px solid black;
+}
+
+aside {
+    border-bottom: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+input[type="number"] {
+    max-width: 50px;
+}
+label {
+    margin-right: 15px;
+}
+
+canvas {
+    border: 1px solid black;
+}
+
+.canvas-container {
+    margin: auto;
+    text-align: center;
+
+    padding: 5px;
+}
+
+#export {
+    display: none;
+}
+
+#export label {
+    display: block;
+    text-align: left;
+    margin: 0 10px;
+}
+
+#export textarea {
+    margin: 10px;
+}
+
+#export div {
+    display: inline-block;
+}
+
+#export div:last-of-type {
+    display: block;
+}
+
+#export small {
+    display: none;
+    margin-top: 10px;
+}
